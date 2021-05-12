@@ -11,8 +11,6 @@ class Spritesheet:
         self.cellWidth = self.rect.width / cols
         self.cellHeight = self.rect.height / rows
 
-        print(self.cellHeight, self.cellWidth)
-
         self.cells = [ ((index % cols) * self.cellWidth, (index // cols) * self.cellHeight ) for index in range(self.totalCells) ]
         self.sprites = [ pygame.Surface((self.cellWidth, self.cellHeight), pygame.SRCALPHA) for i in range(self.totalCells) ] 
         for i in range(len(self.sprites)):

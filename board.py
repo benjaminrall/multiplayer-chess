@@ -12,9 +12,21 @@ class Board:
         self.blackCastling = [False, False]
         self.halfMoves = 0
         self.fullMoves = 0
-        self.turn = 0
+        self.turn = 1
         self.enPassantIndex = -1
+        self.fen = fen
         self.load_fen(fen)
+
+    def get_pieces(self):
+        return self.pieces
+
+    def get_turn(self):
+        return self.turn
+
+    def make_move(self, piece, i):
+        self.pieces[piece[0]] = 0
+        self.pieces[i] = piece[1]
+        self.turn = (self.turn + 1) % 2
 
     def load_fen(self, fen):
         fen = fen.split(" ")
@@ -42,12 +54,11 @@ class Board:
                 i += 1
                 rowCounter += 1
             
-
         # TURN LOADING
         if turn == "w":
-            self.turn = 0
-        else:
             self.turn = 1
+        else:
+            self.turn = 0
 
         # CASTLING LOADING
         self.whiteCastling[0] = "K" in castling
@@ -66,5 +77,45 @@ class Board:
         self.halfMoves = int(halfMoves)
         self.fullMoves = int(fullMoves)
 
+
     def generate_fen(self):
-        pass
+        fen = ""
+        pieces = ""
+        t = 0
+        for row in range(8):
+            for col in range(8):
+                if self.pieces[(row * 8) + col] == 0:
+                    t += 1
+                else:
+                    if t > 0:
+                        pieces += str(t)
+                        t = 0
+                    pieces += self.pieces[(row * 8) + col]
+            if t > 0:
+                pieces += str(t)
+                t = 0
+            pieces += "/"
+        pieces = pieces[:-1]
+
+        turn = {1:"w", 0:"b"}[self.turn]
+
+        castling = ""
+        castling += {True:"K", False:""}[self.whiteCastling[0]]
+        castling += {True:"Q", False:""}[self.whiteCastling[1]]
+        castling += {True:"k", False:""}[self.blackCastling[0]]
+        castling += {True:"q", False:""}[self.blackCastling[1]]
+        if castling == "":
+            castling = "-"
+
+        enpassant = ""
+        if self.enPassantIndex == -1:
+            enpassant = "-"
+        else:
+            enpassant += ["a", "b", "c", "d", "e", "f", "g", "h"][self.enPassantIndex % 8]
+            enpassant += str(8 - (self.enPassantIndex // 8))
+
+        moves = f"{self.halfMoves} {self.fullMoves}"
+
+        fen = f"{pieces} {turn} {castling} {enpassant} {moves}"
+
+        return fen
