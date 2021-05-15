@@ -1,5 +1,4 @@
 import socket
-import pickle
 from _thread import *
 
 server = ""
@@ -17,10 +16,12 @@ print("Waiting for a connection...")
 
 connected = set()
 players = [0, 0]
-storedFen = "empty"
+storedFen = "none"
+storedHeldPiece = "none"
 
 def threaded_client(conn, p):
     global storedFen
+    global storedHeldPiece
     conn.send(str.encode(str(p)))
     reply = ""
     while True:
@@ -33,7 +34,13 @@ def threaded_client(conn, p):
             else:                    
                 if len(data) > 3 and data[0:4] == "play":
                     storedFen = data.split("~")[1]
-                reply = storedFen
+                elif len(data) > 2 and data[0:3] == "pos":
+                    storedHeldPiece = data.split("~")[1]
+                elif data == "over":
+                    storedFen = "none"
+                    storedHeldPiece = "none"
+                    p = (p + 1) % 2
+                reply = storedFen + "~" + storedHeldPiece
                 conn.send(str.encode(reply))
                 # print(f"Sent {reply} to {p}")
         except socket.error as e:
@@ -42,7 +49,7 @@ def threaded_client(conn, p):
     print("Lost connection", conn)
     players[p] = 0
     if not 1 in players:
-        storedFen = "empty"
+        storedFen = "none"
     conn.close()
 
 while True:
