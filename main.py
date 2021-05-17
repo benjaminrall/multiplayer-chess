@@ -2,7 +2,6 @@ from pygame import draw
 from network import Network
 import pygame
 import os
-import random
 from personallib.camera import Camera
 from board import Board
 from spritesheet import Spritesheet
