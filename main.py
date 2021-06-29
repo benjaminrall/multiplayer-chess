@@ -41,7 +41,7 @@ for x in range(8):
 board = Board(STARTING_POSITION)
 sprites = Spritesheet(pygame.transform.scale(pygame.image.load(os.path.join("imgs","spritesheet.png")).convert_alpha(), SIZE), 6, 2)
 
-ip = "86.135.152.108"
+ip = "172.16.4.6"
 n = Network(ip)
 playerID = int(n.getP())
 if playerID < 0:
